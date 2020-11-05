@@ -1,0 +1,85 @@
+---
+title: "mouse_drug_v2_20201105"
+author: "Julse Jiang"
+date: "2020/11/5"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 读取表格，转置
+
+
+```{r}
+library(ggplot2)
+rm(list = ls())
+dat = read.csv('1.csv',stringsAsFactors = F)
+dat=dat[2:138]
+tdat = t(dat)
+tdat = as.data.frame(tdat)
+head(dat)[1:5]
+head(tdat)[1:5]
+
+```
+
+## 分类统计
+
+一共有12个组，每个组的样本数目如下
+
+
+```{R}
+# 获取组名*************************************
+tmp = rownames(tdat)
+tmp = strsplit(unlist(tmp),'.',fixed = TRUE)
+# 丢弃最后一个元素,合并
+#paste(head(tmp[[134]],-1),collapse = '.')
+
+myfun = function(x){
+  x = head(x,-1)
+}
+group_type =sapply(lapply(tmp, myfun), paste, collapse = ".")
+group_count = as.data.frame(table(group_type))
+group_count
+```
+
+## 分组统计
+
+dist:计算欧氏距离
+分组统计异常小鼠 ："DSS.4" "G17.5" "Rg2.3" "Rg3.1" "Rg3.4"
+
+
+```{R}
+#分组统计----------------------------------------------
+mylist = c()
+par(mfrow=c(2,6))
+for (y in 1:12){
+  # 1:20 
+  #取某一类别的名字
+  tmp_group = group_count[y,1]
+  #20
+  tmp_num = as.integer(group_count[which(group_count$group_type %in% tmp_group),][2])
+  # control.1~20
+  tmp_list = paste(tmp_group,1:tmp_num,sep = '.')
+  control_tdat = tdat[tmp_list,]
+  t = colMeans(control_tdat)
+  tmp = data.frame()
+  for (x in 1:tmp_num){
+    tmp = rbind(tmp,dist(rbind(t,colMeans(control_tdat[-x,1:2485]))))
+  }
+
+  colnames(tmp) = c(tmp_group)
+  sp = boxplot(tmp,xlab=tmp_group)
+  sp$out
+    xi <- 0.1 + seq(sp$n)
+  for (a in which(tmp==as.double(sp$out))){
+    # text(xi,tmp[a,], a)
+    mylist = append(mylist,paste(tmp_group,a,sep = '.'))
+    # text(xi,tmp[a,], paste(a,tmp[a,],':'))
+    # print(paste(tmp_group,a,sep = '.'))
+  }
+}
+
+mylist
+```
