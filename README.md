@@ -2,8 +2,8 @@
 
 - R_data_analysis_mouse_exception 
 related blog：
-某数据集异常样本定位 - not public now 
-https://editor.csdn.net/md/?articleId=109514967
+某数据集异常样本定位 - Will be open in the future
+https://blog.csdn.net/Julse/article/details/109514967
 
 
 - Python_ExtractPartnerFromIntAct
